@@ -5,7 +5,7 @@ This project is an extraction system to convert pdf medical file to personal tex
 
 ## Project Structure
 
-- **backend/**: Contains the FastAPI backend server code.
+- **backend/**: Contains the FastAPI backend server code, source code
 - **tests/**: Contains the test cases for backend by Pytest.
 - **requirements.txt**: Lists the required Python packages.
 - **README.md**: Provides an overview and instructions for the project.
