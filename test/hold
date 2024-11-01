@@ -1,0 +1,128 @@
+import re
+from Backend.src.parser_generic import MedicalParser
+
+class PatientPaser(MedicalParser):
+
+    def __init__(self, text):
+        MedicalParser.__init__(self, text)
+
+    def parser(self):
+        return {
+            'name': self.get_name(),
+            'address': self.get_field('address'),
+            'phone_number': self.get_field('phone'),
+            'vaccination': self.get_field('vaccination'),
+            'medical_problems': self.get_field('medical_problems'),
+        }
+
+    def get_field(self, field_name):
+        pattern_dict = {
+            # 'name': {'pattern' : 'Patient Information\s([^\n]+)', 'flag' : re.DOTALL},
+            'address': {'pattern': '0851[^\n]*(.*)in Case', 'flag': re.DOTALL},
+            'phone': {'pattern': 'Patient Information\s[^\n]+\s[^\n]+\s([^\n]+)', 'flag': re.DOTALL},
+            'vaccination': {'pattern': 'vacci[^\n]*(.*)47', 'flag': re.DOTALL},
+            'medical_problem': {'pattern': 'List any[^\n]*(.*)', 'flag': re.DOTALL}
+        }
+        get_object = pattern_dict.get(field_name)
+        if get_object:
+            text = re.findall(pattern_dict[field_name]['pattern'], self.text, re.DOTALL)
+            return text[0].strip()
+
+    def get_name(self):
+        pattern = 'Information\s[^\n]+\s([^\n]+)'
+        name = re.findall(pattern, self.text, re.DOTALL)
+        name = name[0].strip()
+        pattern_date = 'Information.* ((April|June) \d+ \d{4})'
+        date = re.findall(pattern_date, self.text, re.DOTALL)
+        date = date[0][0].strip()
+        name = name.replace(date, '').strip()
+        return name
+
+    def get_phone_number(self):
+        pattern = 'Patient Information\s[^\n]+\s[^\n]+\s([^\n]+)'
+        phone = re.findall(pattern, self.text, re.DOTALL)
+        return phone[0].strip()
+
+    def get_vaccination(self):
+        pattern_vaccination = 'vaccination[^\n]\s*([^\n]+)'
+        vaccination = re.findall(pattern_vaccination, self.text, re.DOTALL)
+        return vaccination[0].strip()
+
+    def get_medical_problems(self):
+        pattern_medical_problems = 'List[^\n]+\s*([^\n]+)'
+        medical_problems = re.findall(pattern_medical_problems, self.text, re.DOTALL)
+        return medical_problems[0].strip()
+
+
+if __name__ == '__main__':
+    document1 = '''
+    page 1:
+     4¥7/12{2020
+
+    Patient Medical Record
+
+    Patient Information Birth Date
+    Kathy Crawford May 6 1972
+    (737) 988-0851 Weight’
+    9264 Ash Dr 95
+    New York City, 10005 i
+    United States Height:
+    190
+    In Case of Emergency :
+    ee oo
+    Simeone Crawford 9266 Ash Dr
+    New York City, New York, 10005
+    Home phone United States
+    (990) 375-4621
+    Work phone
+    Genera! Medical History
+    _
+
+    en a I I
+
+    a
+
+    Chicken Pox (Varicella): Measles:
+
+    IMMUNE IMMUNE
+
+    Have you had the Hepatitis B vaccination?
+
+    No
+
+    List any Medical Problems (asthma, seizures, headaches):
+
+    Migraine
+
+'''
+
+    data = PatientPaser(document1)
+    print(data.parser())
+
+
+
+    # def get_name(self):
+    #     pattern = 'Patient Information\s([^\n]+)'
+    #     name = re.findall(pattern, self.text, re.DOTALL)
+    #     name = name[0].strip()
+    #     return name
+    #
+    # def get_phone_number(self):
+    #     pattern = 'Patient Information\s[^\n]+\s\n([^\n]+)'
+    #     phone = re.findall(pattern, self.text, re.DOTALL)
+    #     print(phone[0].strip())
+    #
+    # def get_address(self):
+    #     pattern = 'Patient Information\s[^\n]+\s\n[^\n]+\s[^\n]+\n(.*)In Case'
+    #     address = re.findall(pattern, self.text, re.DOTALL)
+    #     print(address[0].strip())
+    #
+    # def get_vaccination(self):
+    #     pattern_vaccination = 'vaccination[^\n]\s*([^\n]+)'
+    #     vaccination = re.findall(pattern_vaccination, self.text, re.DOTALL)
+    #     return vaccination[0].strip()
+    #
+    # def get_medical_problems(self):
+    #     pattern_medical_problems = 'List[^\n]+\s*([^\n]+)'
+    #     medical_problems = re.findall(pattern_medical_problems, self.text, re.DOTALL)
+    #     return medical_problems[0].strip()
