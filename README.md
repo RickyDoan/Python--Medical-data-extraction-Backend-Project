@@ -24,7 +24,7 @@ This project is an extraction system to convert pdf medical file to personal tex
    ```
 1. **Run the FastAPI server:**:   
    ```commandline
-    uvicorn Backend/rsc/main:app --reload
+    uvicorn src/main:app --reload
    ```
 1. **Run the Streamlit app:**:   
    ```commandline
